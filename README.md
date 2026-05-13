@@ -8,7 +8,7 @@ If the character under the cursor isn't part of any configured rotation,
 the plugin falls back to the normal case-toggle behavior, so you lose
 nothing.
 
-## > [!NOTE]
+## Note
 
 This is my first publicly published Neovim plugin. There may be anti-patterns
 or non idiomatic methods. 

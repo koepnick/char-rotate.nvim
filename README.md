@@ -2,7 +2,7 @@
 
 A small Neovim plugin that turns `~` from a case-toggle into a
 **character rotator**. Press `~` on a character and it cycles through
-user-defined variants (e.g. `e → E → è → é → ê → ë → ē → e`).
+user-defined variants (e.g. `e → è → é → ê → ë → ē → e`).
 
 If the character under the cursor isn't part of any configured rotation,
 the plugin falls back to the normal case-toggle behavior, so you lose

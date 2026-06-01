@@ -91,13 +91,3 @@ char-rotate.nvim/
 The module path `char-rotate` must match the directory name under `lua/`
 exactly; Neovim's Lua loader resolves `require("char-rotate")` to
 `lua/char-rotate/init.lua` via the runtimepath.
-
-## Disclaimer
-
-This project was developed with the assistance of a large language
-model. The author reviewed, tested, and approved
-the resulting code, but readers should be aware that LLM-generated
-code can contain subtle bugs, outdated API usage, or design choices
-that don't fit every use case. Treat it as you would any small
-third-party plugin: read the source before running it, and file
-issues if something misbehaves.

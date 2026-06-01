@@ -36,6 +36,10 @@ M.defaults = {
     "7⁷₇",
     "8⁸₈",
     "9⁹₉",
+    "$£€",
+    "%°",
+    "^°",
+    "-–—",
   },
   -- If true, when the character under the cursor isn't in any rotation,
   -- fall back to the built-in case-toggle behavior of `~`.

@@ -41,18 +41,32 @@ M.defaults = {
   -- If true, when the character under the cursor isn't in any rotation,
   -- fall back to the built-in case-toggle behavior of `~`.
   fallback_to_case_toggle = true,
+  -- Key to bind the rotation to in normal mode. Defaults to "~" which
+  -- also enables fallback to the built-in case-toggle behavior.
+  key = "~",
+  -- If true, user-provided rotations are appended to the defaults
+  -- instead of replacing them. If false, user rotations completely
+  -- replace the defaults.
+  append_rotations = true,
 }
 
 -- Internal lookup: character -> next character in its rotation.
 local next_char = {}
 
+-- Public: returns the current lookup table (for testing)
+function M._get_next_char()
+  return next_char
+end
+
 -- Build the lookup table from a list of rotation strings.
 -- We use vim.fn.split with empty separator + utf-8 awareness so that
 -- multi-byte characters (é, ñ, etc.) are treated as single units.
+-- After building the initial rotation, a case-toggle entry is inserted
+-- after each lowercase character so that 'a' -> 'A' -> 'à' -> ... instead
+-- of exhausting all lowercase variants before jumping to uppercase.
 local function build_lookup(rotations)
   next_char = {}
   for _, group in ipairs(rotations) do
-    -- Split a UTF-8 string into a list of characters.
     local chars = vim.fn.split(group, "\\zs")
     local n = #chars
     if n > 1 then
@@ -61,6 +75,25 @@ local function build_lookup(rotations)
         next_char[ch] = nxt
       end
     end
+  end
+  -- Insert case-toggle entries: for each lowercase ASCII letter that has
+  -- both itself and its uppercase form in the lookup, insert the
+  -- uppercase form immediately after the lowercase one in the cycle.
+  -- This makes 'a' -> 'A' -> 'à' -> ... instead of exhausting all
+  -- lowercase variants before jumping to uppercase.
+  local lower_chars = {}
+  for ch, _ in pairs(next_char) do
+    local lower = vim.fn.tolower(ch)
+    local upper = vim.fn.toupper(ch)
+    if ch >= 'a' and ch <= 'z' and lower ~= upper and next_char[upper] then
+      table.insert(lower_chars, ch)
+    end
+  end
+  for _, lower in ipairs(lower_chars) do
+    local upper = vim.fn.toupper(lower)
+    local after = next_char[lower]
+    next_char[lower] = upper
+    next_char[upper] = after
   end
 end
 
@@ -124,10 +157,25 @@ end
 
 function M.setup(opts)
   opts = opts or {}
+  local rotations = M.defaults.rotations
+  if opts.rotations then
+    if opts.append_rotations ~= false then
+      -- Append user rotations to defaults
+      rotations = vim.list_extend(M.defaults.rotations, opts.rotations)
+    else
+      -- User rotations replace defaults entirely
+      rotations = opts.rotations
+    end
+  end
+
   M.config = vim.tbl_deep_extend("force", M.defaults, opts)
+  M.config.rotations = rotations
+  M.config._next_char = next_char
+  M.config._key = M.config.key
+
   build_lookup(M.config.rotations)
 
-  vim.keymap.set("n", "~", function() M.rotate() end, {
+  vim.keymap.set("n", M.config.key, function() M.rotate() end, {
     desc = "Rotate character under cursor through configured variants",
   })
 end

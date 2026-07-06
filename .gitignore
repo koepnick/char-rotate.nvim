@@ -39,3 +39,16 @@ luac.out
 *.x86_64
 *.hex
 
+# Test
+test/xdg/
+test/.luarocks/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+

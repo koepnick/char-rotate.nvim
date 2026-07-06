@@ -1,0 +1,8 @@
+#!/bin/sh
+# Neovim shim for Busted
+# Allows Busted to use Neovim as the Lua interpreter
+
+# Add the project's lua/ directory to the Lua package path
+export LUA_PATH="$(dirname "$0")/../lua/?.lua;;"
+
+nvim --cmd "set loadplugins" -l "$@"

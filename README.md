@@ -46,7 +46,7 @@ your config under the matching paths.
 
 ```lua
 require("char-rotate").setup({
-  -- Each string is a cycle. Pressing `~` on any character replaces it
+  -- Each string is a cycle. Pressing `key` on any character replaces it
   -- with the next character in the string, wrapping around at the end.
   rotations = {
     "aàáâãäåā",
@@ -58,7 +58,82 @@ require("char-rotate").setup({
     "<>",          -- swap angle brackets
     "()[]{}",      -- rotate through bracket pairs
   },
+  -- The key bound to the rotation in normal mode. Defaults to "~" to
+  -- preserve compatibility and enable fallback to the built-in case-toggle.
+  key = "~",
   fallback_to_case_toggle = true,
+  -- If true (default), user-provided rotations are appended to the
+  -- built-in defaults. Set to false to replace the defaults entirely.
+  append_rotations = true,
+})
+```
+
+**Note:** The `fallback_to_case_toggle` option only works when `key` is set to `"~"`, since it defers to Vim's built-in `~` command. If you use a different key, set `fallback_to_case_toggle = false`.
+
+**Adding custom rotations:**
+
+To add new rotations while keeping all built-in defaults, simply include the
+`rotations` key — the new entries are appended to the defaults:
+
+```lua
+require("char-rotate").setup({
+  rotations = {
+    "-_",          -- custom: hyphen ↔ underscore
+    "<>",          -- custom: angle brackets
+  },
+})
+```
+
+To replace the defaults entirely, set `append_rotations = false`:
+
+```lua
+require("char-rotate").setup({
+  rotations = {
+    "eèéêëē",
+    "EÈÉÊËĒ",
+    "-_",
+  },
+  append_rotations = false,
+})
+```
+
+To remove specific built-in rotations, use `append_rotations = false` and
+list only the rotations you want:
+
+```lua
+require("char-rotate").setup({
+  -- Start with defaults, exclude the ones you don't want
+  rotations = {
+    "aàáâãäåā",
+    "AÀÁÂÃÄÅĀ",
+    "iìíîïī",
+    "IÌÍÎÏĪ",
+    "oòóôõöøō",
+    "OÒÓÔÕÖØŌ",
+    "uùúûüū",
+    "UÙÚÛÜŪ",
+    "cçćč",
+    "CÇĆČ",
+    "nñń",
+    "NÑŃ",
+    "sśš",
+    "SŚŠ",
+    "$£€",
+    "%°",
+    "0⁰₀",
+    "1¹₁",
+    "2²₂",
+    "3³₃",
+    "4⁴₄",
+    "5⁵₅",
+    "6⁶₆",
+    "7⁷₇",
+    "8⁸₈",
+    "9⁹₉",
+    "-–—",
+    -- Exclude: "eèéêëē", "EÈÉÊËĒ", "$£€", "%°"
+  },
+  append_rotations = false,
 })
 ```
 
@@ -94,5 +169,5 @@ exactly; Neovim's Lua loader resolves `require("char-rotate")` to
 
 # TODO
 - [ ] Turkish diacritics
-- [ ] Give users the option to append custom lists rather than clobber
-- [ ] Allow re-mapping "~" to another key
+- [x] Allow users to append custom lists rather than clobber
+- [x] Allow re-mapping "~" to another key
